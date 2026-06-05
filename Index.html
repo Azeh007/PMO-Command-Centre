@@ -1,0 +1,533 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#2563EB;--accent2:#7C3AED;--success:#16A34A;--warning:#D97706;--danger:#DC2626;--neutral:#6B7280}
+body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary);background:var(--color-background-tertiary)}
+.pmo{padding:0 0 2rem}
+.hero{background:linear-gradient(135deg,#1E3A8A 0%,#2563EB 50%,#7C3AED 100%);padding:1.5rem 1.5rem 1.25rem;margin-bottom:1.5rem;border-radius:0 0 var(--border-radius-lg) var(--border-radius-lg)}
+.hero h1{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:2px}
+.hero .sub{font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px}
+.hero .sub .dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-actions{display:flex;gap:8px;margin-top:1rem}
+.hero-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--border-radius-md);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:transform .1s,opacity .1s}
+.hero-btn:active{transform:scale(.97)}
+.hero-btn.primary{background:#fff;color:#1E3A8A}
+.hero-btn.secondary{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.hero-btn.secondary:hover{background:rgba(255,255,255,.25)}
+.px{padding:0 1.25rem}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.5rem}
+.s-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.s-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--border-radius-lg) var(--border-radius-lg) 0 0}
+.s-card.c-total::before{background:linear-gradient(90deg,#2563EB,#7C3AED)}
+.s-card.c-new::before{background:#16A34A}
+.s-card.c-ongoing::before{background:#2563EB}
+.s-card.c-hold::before{background:#D97706}
+.s-card.c-closed::before{background:#6B7280}
+.s-card:hover,.s-card.active{border-color:#2563EB;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.s-card .label{font-size:11px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.s-card .num{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.s-card .sub{font-size:11px;color:var(--color-text-tertiary);margin-top:4px;font-weight:500}
+.num.new{color:#16A34A}.num.ongoing{color:#2563EB}.num.onhold{color:#D97706}.num.closed{color:#6B7280}.num.total{color:var(--color-text-primary)}
+.section-tabs{display:flex;gap:2px;margin-bottom:1.25rem;background:var(--color-background-secondary);padding:4px;border-radius:var(--border-radius-lg);width:fit-content}
+.tab{padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--color-text-secondary);border-radius:var(--border-radius-md);transition:all .15s}
+.tab.active{background:var(--color-background-primary);color:#2563EB;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.panel{display:none}.panel.active{display:block}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:160px;padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:500}
+.toolbar input:focus{outline:none;border-color:#2563EB}
+.toolbar select{padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:500}
+.tbl-wrap{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.5rem;overflow-x:auto;background:var(--color-background-primary)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:700;font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;border-bottom:1.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+td{padding:11px 12px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle;font-weight:500}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+.rag{display:inline-flex;align-items:center;gap:5px}
+.rag-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rag-dot.R{background:#DC2626;box-shadow:0 0 0 3px rgba(220,38,38,.2)}
+.rag-dot.A{background:#D97706;box-shadow:0 0 0 3px rgba(217,119,6,.2)}
+.rag-dot.G{background:#16A34A;box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.02em}
+.badge.new{background:#DCFCE7;color:#166534}
+.badge.ongoing{background:#DBEAFE;color:#1E40AF}
+.badge.onhold{background:#FEF3C7;color:#92400E}
+.badge.closed{background:#F3F4F6;color:#374151}
+.badge.p-hig,.badge.p-high{background:#FEE2E2;color:#991B1B}
+.badge.p-med,.badge.p-medium{background:#FEF3C7;color:#92400E}
+.badge.p-low{background:#DCFCE7;color:#166534}
+.progress-wrap{display:flex;align-items:center;gap:8px;min-width:90px}
+.progress-bar{flex:1;height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .3s}
+.pct-label{font-size:12px;font-weight:700;min-width:32px;color:var(--color-text-secondary)}
+.row-actions{display:flex;gap:4px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);padding:5px;border-radius:6px;display:inline-flex;align-items:center;font-size:15px}
+.icon-btn:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.icon-btn.danger:hover{color:#DC2626;background:#FEE2E2}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.chart-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem}
+.chart-card h3{font-size:13px;font-weight:700;color:var(--color-text-primary);margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.75rem;width:660px;max-width:96vw;max-height:92vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1.5px solid var(--color-border-tertiary)}
+.modal-header h2{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:11px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group select,.form-group textarea{padding:9px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:500;font-family:var(--font-sans);transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#2563EB}
+.form-group textarea{resize:vertical;min-height:72px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1.5rem;border-top:1.5px solid var(--color-border-tertiary);padding-top:1.25rem}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn.primary{background:#2563EB;color:#fff;border-color:#2563EB}
+.btn.primary:hover{background:#1D4ED8;border-color:#1D4ED8}
+.btn.danger{color:#DC2626;border-color:#DC2626}
+.btn.danger:hover{background:#FEE2E2}
+.detail-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center}
+.detail-modal.open{display:flex}
+.detail-content{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.75rem;width:740px;max-width:97vw;max-height:93vh;overflow-y:auto}
+.detail-hero{background:linear-gradient(135deg,#1E3A8A,#2563EB);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1.25rem;color:#fff}
+.detail-hero .pid{font-size:11px;font-weight:700;opacity:.7;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.detail-hero h2{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.info-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;color:#fff}
+.progress-hero{height:8px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;margin-top:10px}
+.progress-hero-fill{height:100%;background:#4ADE80;border-radius:4px}
+.comment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.comment-block{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem}
+.comment-block h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.h4-position{color:#7C3AED}.h4-blocker{color:#DC2626}.h4-dep{color:#2563EB}.h4-remark{color:#16A34A}
+.log-entry{border-left:3px solid var(--color-border-secondary);padding:7px 10px;margin-bottom:8px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-primary)}
+.log-entry.position{border-color:#7C3AED}.log-entry.blocker{border-color:#DC2626}.log-entry.dep{border-color:#2563EB}.log-entry.remark{border-color:#16A34A}
+.log-entry .meta{font-size:10px;font-weight:700;color:var(--color-text-tertiary);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.log-entry .text{font-size:13px;font-weight:500;line-height:1.5}
+.add-comment-form{background:var(--color-background-secondary);border:1.5px dashed var(--color-border-secondary);padding:1rem;border-radius:var(--border-radius-lg);margin-top:.5rem}
+.add-comment-form .form-row{display:grid;grid-template-columns:180px 1fr;gap:8px;align-items:start}
+.no-data{font-size:12px;color:var(--color-text-tertiary);font-style:italic;font-weight:500}
+.detail-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.detail-panel h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.milestone-row,.risk-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;font-weight:500}
+.milestone-row:last-child,.risk-row:last-child{border-bottom:none}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1E293B;color:#fff;padding:11px 18px;border-radius:var(--border-radius-lg);font-size:13px;font-weight:700;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1}
+.inline-edit{display:inline-flex;align-items:center;gap:4px}
+.inline-edit input,.inline-edit select{padding:3px 7px;border:1.5px solid #2563EB;border-radius:6px;font-size:12px;font-weight:600;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans)}
+.save-inline{background:#2563EB;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer}
+.cancel-inline{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:5px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer;color:var(--color-text-secondary)}
+.editable-cell{cursor:pointer;border-bottom:1.5px dashed transparent;transition:border-color .15s}
+.editable-cell:hover{border-bottom-color:#2563EB;color:#2563EB}
+</style>
+
+<h2 class="sr-only">PMO Command Centre — project portfolio tracker</h2>
+<div class="pmo">
+
+<div class="hero">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+    <div>
+      <h1><i class="ti ti-layout-dashboard" aria-hidden="true"></i> PMO Command Centre</h1>
+      <div class="sub"><span class="dot"></span><span id="lastSaved">Loading portfolio...</span></div>
+    </div>
+    <div class="hero-actions">
+      <button class="hero-btn secondary" onclick="exportCSV()"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button>
+      <button class="hero-btn primary" onclick="openAddModal()"><i class="ti ti-plus" aria-hidden="true"></i> Add project</button>
+    </div>
+  </div>
+</div>
+
+<div class="px">
+<div class="summary-grid" id="summaryGrid"></div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+  <div class="section-tabs">
+    <div class="tab active" onclick="switchTab('registry',this)"><i class="ti ti-table" aria-hidden="true"></i> Registry</div>
+    <div class="tab" onclick="switchTab('analytics',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i> Analytics</div>
+    <div class="tab" onclick="switchTab('milestones',this)"><i class="ti ti-flag" aria-hidden="true"></i> Milestones & risks</div>
+  </div>
+  <div style="font-size:11px;font-weight:600;color:var(--color-text-tertiary);display:flex;align-items:center;gap:4px"><i class="ti ti-pencil" aria-hidden="true"></i> Click any cell to inline-edit</div>
+</div>
+
+<div id="panel-registry" class="panel active">
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Search name, owner, ID..." oninput="renderTable()">
+    <select id="filterStatus" onchange="renderTable()">
+      <option value="">All statuses</option>
+      <option>New</option><option>Ongoing</option><option>On hold</option><option>Closed</option>
+    </select>
+    <select id="filterPriority" onchange="renderTable()">
+      <option value="">All priorities</option>
+      <option>High</option><option>Medium</option><option>Low</option>
+    </select>
+    <select id="filterRAG" onchange="renderTable()">
+      <option value="">All RAG</option>
+      <option value="G">Green</option><option value="A">Amber</option><option value="R">Red</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Project name</th><th>Owner</th><th>Dept</th>
+          <th>Status</th><th>Priority</th><th>RAG</th>
+          <th>End date</th><th>Progress</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="projectTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="panel-analytics" class="panel">
+  <div class="charts-grid">
+    <div class="chart-card"><h3>Projects by status</h3><div style="position:relative;height:220px"><canvas id="statusChart" role="img" aria-label="Donut chart of projects by status">Status distribution.</canvas></div></div>
+    <div class="chart-card"><h3>Projects by priority</h3><div style="position:relative;height:220px"><canvas id="priorityChart" role="img" aria-label="Bar chart of projects by priority">Priority distribution.</canvas></div></div>
+    <div class="chart-card"><h3>RAG health overview</h3><div style="position:relative;height:220px"><canvas id="ragChart" role="img" aria-label="Donut chart of RAG health">RAG distribution.</canvas></div></div>
+    <div class="chart-card"><h3>Avg. completion by status</h3><div style="position:relative;height:220px"><canvas id="completionChart" role="img" aria-label="Bar chart of average completion">Completion by status.</canvas></div></div>
+  </div>
+</div>
+
+<div id="panel-milestones" class="panel">
+  <div class="detail-panel">
+    <h3><i class="ti ti-flag" aria-hidden="true" style="color:#2563EB"></i> Upcoming milestones</h3>
+    <div id="milestoneList"></div>
+  </div>
+  <div class="detail-panel">
+    <h3><i class="ti ti-alert-triangle" aria-hidden="true" style="color:#DC2626"></i> Risk register</h3>
+    <div id="riskList"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="modal-bg" id="projectModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add new project</h2>
+      <button class="icon-btn" onclick="closeModal()" style="font-size:20px"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Project ID</label><input id="f-id" placeholder="PRJ-001"></div>
+      <div class="form-group"><label>Project name</label><input id="f-name" placeholder="Project name"></div>
+      <div class="form-group"><label>Owner</label><input id="f-owner" placeholder="Full name"></div>
+      <div class="form-group"><label>Department</label><input id="f-dept" placeholder="Department"></div>
+      <div class="form-group"><label>Status</label><select id="f-status"><option>New</option><option>Ongoing</option><option>On hold</option><option>Closed</option></select></div>
+      <div class="form-group"><label>Priority</label><select id="f-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="form-group"><label>RAG status</label><select id="f-rag"><option value="G">Green</option><option value="A">Amber</option><option value="R">Red</option></select></div>
+      <div class="form-group"><label>Completion (%)</label><input id="f-pct" type="number" min="0" max="100" placeholder="0"></div>
+      <div class="form-group"><label>Start date</label><input id="f-start" type="date"></div>
+      <div class="form-group"><label>End date</label><input id="f-end" type="date"></div>
+      <div class="form-group"><label>Budget (₦)</label><input id="f-budget" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Actual spend (₦)</label><input id="f-spend" type="number" placeholder="0"></div>
+      <div class="form-group full"><label>Milestone</label><input id="f-milestone" placeholder="Next key milestone"></div>
+      <div class="form-group full"><label>Risk</label><input id="f-risk" placeholder="Key risk"></div>
+      <div class="form-group full"><label>Notes</label><textarea id="f-notes" placeholder="General notes..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveProject()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save project</button>
+    </div>
+  </div>
+</div>
+
+<div class="detail-modal" id="detailModal">
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i><span id="toastMsg"></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let projects=[];
+let editingId=null;
+let statusFilter='';
+let charts={};
+
+const SAMPLE=[
+  {id:'PRJ-001',name:'Digital Transformation Initiative',owner:'Amara Okafor',dept:'IT',status:'Ongoing',priority:'High',rag:'A',pct:62,start:'2024-01-15',end:'2025-12-31',budget:45000000,spend:28000000,milestone:'Phase 2 go-live',risk:'Resource availability',notes:'Phase 1 complete.',comments:[{type:'position',text:'Currently in Phase 2 development. API integrations 70% complete.',ts:1716000000000},{type:'blocker',text:'Awaiting vendor approval for cloud migration license.',ts:1717000000000},{type:'remark',text:'Steering committee review scheduled for end of month.',ts:1718000000000}]},
+  {id:'PRJ-002',name:'HR System Upgrade',owner:'Chidi Nwosu',dept:'HR',status:'New',priority:'Medium',rag:'G',pct:5,start:'2025-06-01',end:'2025-11-30',budget:12000000,spend:500000,milestone:'Vendor selection',risk:'Budget overrun',notes:'Procurement stage.',comments:[{type:'position',text:'Vendor shortlisting in progress. 3 vendors evaluated.',ts:1718500000000}]},
+  {id:'PRJ-003',name:'ERP Rollout — Phase 3',owner:'Ngozi Adeyemi',dept:'Finance',status:'Ongoing',priority:'High',rag:'R',pct:41,start:'2023-09-01',end:'2025-08-31',budget:80000000,spend:72000000,milestone:'UAT sign-off',risk:'Cost overrun critical',notes:'Budget under pressure.',comments:[{type:'blocker',text:'Legacy data migration failing validation.',ts:1717500000000},{type:'dep',text:'Dependent on PRJ-001 API completion before UAT.',ts:1718200000000},{type:'remark',text:'Escalated to CTO. Weekly war-room meetings initiated.',ts:1718800000000}]},
+  {id:'PRJ-004',name:'Customer Portal Redesign',owner:'Emeka Eze',dept:'Digital',status:'Ongoing',priority:'High',rag:'G',pct:78,start:'2024-03-01',end:'2025-07-31',budget:8000000,spend:6200000,milestone:'UAT completion',risk:'Low — on track',notes:'On schedule.',comments:[{type:'position',text:'UAT started. 15 of 22 test cases passed.',ts:1718900000000}]},
+  {id:'PRJ-005',name:'Data Warehouse Build',owner:'Aisha Bello',dept:'Analytics',status:'On hold',priority:'Low',rag:'A',pct:30,start:'2024-05-01',end:'2026-03-31',budget:20000000,spend:6000000,milestone:'Architecture sign-off',risk:'Vendor dependency',notes:'Put on hold Q1.',comments:[{type:'blocker',text:'Project on hold pending budget reallocation decision from CFO.',ts:1715000000000},{type:'dep',text:'Depends on ERP rollout (PRJ-003) data model finalisation.',ts:1715500000000}]},
+  {id:'PRJ-006',name:'Compliance Audit System',owner:'Tunde Fashola',dept:'Legal',status:'Closed',priority:'Medium',rag:'G',pct:100,start:'2023-01-10',end:'2024-12-31',budget:5000000,spend:4800000,milestone:'Completed',risk:'None',notes:'Successfully delivered.',comments:[{type:'remark',text:'Project closed successfully. All deliverables accepted by Legal Director.',ts:1710000000000}]}
+];
+
+async function loadData(){
+  try{const r=await window.storage.get('pmo_v2');if(r&&r.value){projects=JSON.parse(r.value);}else{projects=JSON.parse(JSON.stringify(SAMPLE));await saveData();}}
+  catch(e){projects=JSON.parse(JSON.stringify(SAMPLE));}
+  document.getElementById('lastSaved').textContent='Portfolio live · '+projects.length+' projects · Last saved '+new Date().toLocaleTimeString();
+  render();
+}
+
+async function saveData(){
+  try{await window.storage.set('pmo_v2',JSON.stringify(projects));document.getElementById('lastSaved').textContent='Portfolio live · '+projects.length+' projects · Saved '+new Date().toLocaleTimeString();}
+  catch(e){}
+}
+
+function render(){renderSummary();renderTable();if(document.getElementById('panel-analytics').classList.contains('active'))renderCharts();renderMilestones();}
+
+function renderSummary(){
+  const c={total:projects.length,New:0,Ongoing:0,'On hold':0,Closed:0};
+  projects.forEach(p=>c[p.status]=(c[p.status]||0)+1);
+  const reds=projects.filter(p=>p.rag==='R').length;
+  document.getElementById('summaryGrid').innerHTML=`
+    <div class="s-card c-total ${statusFilter===''?'active':''}" onclick="setFilter('')">
+      <div class="label">Total</div><div class="num total">${c.total}</div><div class="sub">${reds} red RAG alert${reds!==1?'s':''}</div>
+    </div>
+    <div class="s-card c-new ${statusFilter==='New'?'active':''}" onclick="setFilter('New')">
+      <div class="label">New</div><div class="num new">${c.New||0}</div><div class="sub">Initiated</div>
+    </div>
+    <div class="s-card c-ongoing ${statusFilter==='Ongoing'?'active':''}" onclick="setFilter('Ongoing')">
+      <div class="label">Ongoing</div><div class="num ongoing">${c.Ongoing||0}</div><div class="sub">In progress</div>
+    </div>
+    <div class="s-card c-hold ${statusFilter==='On hold'?'active':''}" onclick="setFilter('On hold')">
+      <div class="label">On hold</div><div class="num onhold">${c['On hold']||0}</div><div class="sub">Paused</div>
+    </div>
+    <div class="s-card c-closed ${statusFilter==='Closed'?'active':''}" onclick="setFilter('Closed')">
+      <div class="label">Closed</div><div class="num closed">${c.Closed||0}</div><div class="sub">Completed</div>
+    </div>`;
+}
+
+function setFilter(s){statusFilter=s;document.getElementById('filterStatus').value=s;renderSummary();renderTable();}
+
+function getFiltered(){
+  let q=document.getElementById('searchInput').value.toLowerCase();
+  let fs=document.getElementById('filterStatus').value||statusFilter;
+  let fp=document.getElementById('filterPriority').value;
+  let fr=document.getElementById('filterRAG').value;
+  return projects.filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q)&&!p.id.toLowerCase().includes(q)&&!p.owner.toLowerCase().includes(q))return false;
+    if(fs&&p.status!==fs)return false;
+    if(fp&&p.priority!==fp)return false;
+    if(fr&&p.rag!==fr)return false;
+    return true;
+  });
+}
+
+function getPctColor(pct){if(pct>=75)return'#16A34A';if(pct>=40)return'#2563EB';if(pct>0)return'#D97706';return'#DC2626';}
+
+function renderTable(){
+  const filtered=getFiltered();
+  const tbody=document.getElementById('projectTable');
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;padding:3rem;color:var(--color-text-secondary);font-weight:600"><i class="ti ti-inbox" style="font-size:28px;display:block;margin:0 auto 8px" aria-hidden="true"></i>No projects found</td></tr>';return;}
+  const ragLabel={R:'Red',A:'Amber',G:'Green'};
+  tbody.innerHTML=filtered.map(p=>`
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--color-text-tertiary)">${p.id}</td>
+      <td style="font-weight:700;max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+        <span class="editable-cell" onclick="inlineEdit('${p.id}','name',this,'text')">${p.name}</span>
+      </td>
+      <td style="font-weight:600">
+        <span class="editable-cell" onclick="inlineEdit('${p.id}','owner',this,'text')">${p.owner}</span>
+      </td>
+      <td style="color:var(--color-text-secondary);font-weight:600">
+        <span class="editable-cell" onclick="inlineEdit('${p.id}','dept',this,'text')">${p.dept}</span>
+      </td>
+      <td onclick="inlineEdit('${p.id}','status',this,'select',['New','Ongoing','On hold','Closed'])" style="cursor:pointer">
+        <span class="badge ${p.status.toLowerCase().replace(' ','')}">${p.status}</span>
+      </td>
+      <td onclick="inlineEdit('${p.id}','priority',this,'select',['High','Medium','Low'])" style="cursor:pointer">
+        <span class="badge p-${p.priority.toLowerCase().substring(0,3)}">${p.priority}</span>
+      </td>
+      <td onclick="inlineEdit('${p.id}','rag',this,'select',['G','A','R'],['Green','Amber','Red'])" style="cursor:pointer">
+        <div class="rag"><span class="rag-dot ${p.rag}"></span><span style="font-size:11px;font-weight:700;color:var(--color-text-secondary)">${ragLabel[p.rag]}</span></div>
+      </td>
+      <td style="color:var(--color-text-secondary);font-size:12px;font-weight:600">
+        <span class="editable-cell" onclick="inlineEdit('${p.id}','end',this,'date')">${p.end||'—'}</span>
+      </td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${p.pct||0}%;background:${getPctColor(p.pct||0)}"></div></div>
+          <span class="pct-label editable-cell" onclick="inlineEdit('${p.id}','pct',this,'number')">${p.pct||0}%</span>
+        </div>
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" title="View & comment" onclick="openDetail('${p.id}')"><i class="ti ti-eye" aria-hidden="true"></i></button>
+          <button class="icon-btn" title="Full edit" onclick="openEditModal('${p.id}')"><i class="ti ti-edit" aria-hidden="true"></i></button>
+          <button class="icon-btn danger" title="Delete" onclick="deleteProject('${p.id}')"><i class="ti ti-trash" aria-hidden="true"></i></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function inlineEdit(id,field,el,type,opts,optLabels){
+  if(el.querySelector('input,select'))return;
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  const cur=p[field]||'';
+  let input;
+  if(type==='select'){
+    input=document.createElement('select');
+    (opts||[]).forEach((o,i)=>{const op=document.createElement('option');op.value=o;op.textContent=optLabels?optLabels[i]:o;if(o===cur)op.selected=true;input.appendChild(op);});
+  } else {
+    input=document.createElement('input');
+    input.type=type==='number'?'number':type==='date'?'date':'text';
+    input.value=type==='number'?parseInt(cur)||0:cur;
+    if(type==='number'){input.min=0;input.max=100;}
+  }
+  const saveBtn=document.createElement('button');saveBtn.className='save-inline';saveBtn.textContent='✓';
+  const cancelBtn=document.createElement('button');cancelBtn.className='cancel-inline';cancelBtn.textContent='✕';
+  const wrap=document.createElement('span');wrap.className='inline-edit';
+  wrap.appendChild(input);wrap.appendChild(saveBtn);wrap.appendChild(cancelBtn);
+  el.textContent='';el.appendChild(wrap);input.focus();
+  const doSave=()=>{
+    const val=type==='number'?Math.min(100,Math.max(0,parseInt(input.value)||0)):input.value;
+    p[field]=val;saveData();renderTable();renderSummary();
+    showToast(field.charAt(0).toUpperCase()+field.slice(1)+' updated');
+  };
+  const doCancel=()=>renderTable();
+  saveBtn.onclick=e=>{e.stopPropagation();doSave();};
+  cancelBtn.onclick=e=>{e.stopPropagation();doCancel();};
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')doSave();if(e.key==='Escape')doCancel();});
+}
+
+function renderCharts(){
+  const statuses=['New','Ongoing','On hold','Closed'];
+  const sc=statuses.map(s=>projects.filter(p=>p.status===s).length);
+  const pc=[projects.filter(p=>p.priority==='High').length,projects.filter(p=>p.priority==='Medium').length,projects.filter(p=>p.priority==='Low').length];
+  const rc=[projects.filter(p=>p.rag==='G').length,projects.filter(p=>p.rag==='A').length,projects.filter(p=>p.rag==='R').length];
+  const avg=s=>{const ps=projects.filter(p=>p.status===s);return ps.length?Math.round(ps.reduce((a,b)=>a+(b.pct||0),0)/ps.length):0;};
+  const dOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+  if(charts.status)charts.status.destroy();
+  charts.status=new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:statuses,datasets:[{data:sc,backgroundColor:['#16A34A','#2563EB','#D97706','#6B7280'],borderWidth:3,borderColor:'#fff'}]},options:{...dOpts,cutout:'65%'}});
+  if(charts.priority)charts.priority.destroy();
+  charts.priority=new Chart(document.getElementById('priorityChart'),{type:'bar',data:{labels:['High','Medium','Low'],datasets:[{label:'Projects',data:pc,backgroundColor:['#DC2626','#D97706','#16A34A'],borderRadius:6}]},options:{...dOpts,scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  if(charts.rag)charts.rag.destroy();
+  charts.rag=new Chart(document.getElementById('ragChart'),{type:'doughnut',data:{labels:['Green','Amber','Red'],datasets:[{data:rc,backgroundColor:['#16A34A','#D97706','#DC2626'],borderWidth:3,borderColor:'#fff'}]},options:{...dOpts,cutout:'65%'}});
+  if(charts.completion)charts.completion.destroy();
+  charts.completion=new Chart(document.getElementById('completionChart'),{type:'bar',data:{labels:statuses,datasets:[{label:'Avg %',data:statuses.map(avg),backgroundColor:['#16A34A','#2563EB','#D97706','#6B7280'],borderRadius:6}]},options:{...dOpts,scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+}
+
+function renderMilestones(){
+  const ml=document.getElementById('milestoneList');
+  const rl=document.getElementById('riskList');
+  const hm=projects.filter(p=>p.milestone&&p.milestone!=='Completed'&&p.status!=='Closed');
+  const hr=projects.filter(p=>p.risk&&p.risk!=='None'&&p.risk!=='Low — on track');
+  ml.innerHTML=hm.length?hm.map(p=>`<div class="milestone-row"><span class="rag-dot ${p.rag}"></span><span style="flex:1">${p.milestone}</span><span style="color:var(--color-text-secondary);font-size:12px">${p.name}</span><span style="font-size:11px;color:var(--color-text-tertiary);min-width:80px;text-align:right">${p.end||''}</span></div>`).join(''):'<p class="no-data">No upcoming milestones</p>';
+  rl.innerHTML=hr.length?hr.map(p=>`<div class="risk-row"><span class="rag-dot ${p.rag}"></span><span style="flex:1">${p.risk}</span><span style="color:var(--color-text-secondary);font-size:12px">${p.name}</span><span class="badge p-${p.priority.toLowerCase().substring(0,3)}">${p.priority}</span></div>`).join(''):'<p class="no-data">No active risks</p>';
+}
+
+function openDetail(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  const typeLabel={position:'Current position',blocker:'Blocker / issue',dep:'Dependency',remark:'Remark'};
+  const typeIcon={position:'ti-map-pin',blocker:'ti-lock',dep:'ti-link',remark:'ti-message-circle'};
+  const comments=p.comments||[];
+  const grouped={position:[],blocker:[],dep:[],remark:[]};
+  comments.forEach(c=>{if(grouped[c.type])grouped[c.type].push(c);});
+  const fmt=ts=>new Date(ts).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const bf=n=>n?'₦'+Number(n).toLocaleString():'—';
+  const ragLabel={R:'Red',A:'Amber',G:'Green'};
+  document.getElementById('detailContent').innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button class="icon-btn" onclick="document.getElementById('detailModal').classList.remove('open')" style="font-size:22px"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="detail-hero">
+      <div class="pid">${p.id}</div>
+      <h2>${p.name}</h2>
+      <div class="info-chips">
+        <span class="chip"><i class="ti ti-user" aria-hidden="true"></i> ${p.owner}</span>
+        <span class="chip">${p.dept}</span>
+        <span class="chip">${p.status}</span>
+        <span class="chip">${p.priority} priority</span>
+        <span class="chip">RAG: ${ragLabel[p.rag]}</span>
+        <span class="chip">${p.start||'?'} → ${p.end||'?'}</span>
+        <span class="chip">Budget: ${bf(p.budget)}</span>
+        <span class="chip">Spend: ${bf(p.spend)}</span>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:4px">${p.pct||0}% complete</div>
+      <div class="progress-hero"><div class="progress-hero-fill" style="width:${p.pct||0}%"></div></div>
+    </div>
+    ${p.notes?`<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:1.25rem;padding:10px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid #2563EB">${p.notes}</div>`:''}
+    <div class="comment-grid">
+      ${Object.entries(grouped).map(([type,entries])=>`
+        <div class="comment-block">
+          <h4 class="h4-${type}"><i class="ti ${typeIcon[type]}" aria-hidden="true"></i>${typeLabel[type]}</h4>
+          ${entries.length?entries.map(c=>`<div class="log-entry ${type}"><div class="meta">${fmt(c.ts)}</div><div class="text">${c.text}</div></div>`).join(''):'<p class="no-data">None logged yet</p>'}
+        </div>`).join('')}
+    </div>
+    <div class="add-comment-form">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-secondary);margin-bottom:10px"><i class="ti ti-plus" aria-hidden="true"></i> Add comment / update</div>
+      <div class="form-row">
+        <select id="commentType" style="padding:8px 10px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:600;font-family:var(--font-sans)">
+          <option value="position">Current position</option>
+          <option value="remark">Remark</option>
+          <option value="blocker">Blocker / issue</option>
+          <option value="dep">Dependency</option>
+        </select>
+        <textarea id="commentText" rows="2" placeholder="Enter your update, remark, blocker or dependency..." style="padding:8px 10px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-weight:500;font-family:var(--font-sans);resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <button class="btn primary" onclick="addComment('${p.id}')"><i class="ti ti-send" aria-hidden="true"></i> Add comment</button>
+      </div>
+    </div>`;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function addComment(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  const type=document.getElementById('commentType').value;
+  const text=document.getElementById('commentText').value.trim();
+  if(!text){showToast('Please enter a comment');return;}
+  if(!p.comments)p.comments=[];
+  p.comments.push({type,text,ts:Date.now()});
+  saveData();showToast('Comment added');openDetail(id);
+}
+
+function openAddModal(){editingId=null;document.getElementById('modalTitle').textContent='Add new project';['id','name','owner','dept','milestone','risk','notes'].forEach(f=>document.getElementById('f-'+f).value='');['pct','budget','spend'].forEach(f=>document.getElementById('f-'+f).value='');document.getElementById('f-status').value='New';document.getElementById('f-priority').value='High';document.getElementById('f-rag').value='G';document.getElementById('f-start').value='';document.getElementById('f-end').value='';document.getElementById('projectModal').classList.add('open');}
+
+function openEditModal(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  editingId=id;document.getElementById('modalTitle').textContent='Edit — '+p.name;
+  document.getElementById('f-id').value=p.id;document.getElementById('f-name').value=p.name;
+  document.getElementById('f-owner').value=p.owner;document.getElementById('f-dept').value=p.dept;
+  document.getElementById('f-status').value=p.status;document.getElementById('f-priority').value=p.priority;
+  document.getElementById('f-rag').value=p.rag;document.getElementById('f-pct').value=p.pct||0;
+  document.getElementById('f-start').value=p.start||'';document.getElementById('f-end').value=p.end||'';
+  document.getElementById('f-budget').value=p.budget||'';document.getElementById('f-spend').value=p.spend||'';
+  document.getElementById('f-milestone').value=p.milestone||'';document.getElementById('f-risk').value=p.risk||'';
+  document.getElementById('f-notes').value=p.notes||'';
+  document.getElementById('projectModal').classList.add('open');
+}
+
+function saveProject(){
+  const id=document.getElementById('f-id').value.trim();
+  const name=document.getElementById('f-name').value.trim();
+  if(!id||!name){showToast('Project ID and name are required');return;}
+  if(!editingId&&projects.find(p=>p.id===id)){showToast('Project ID already exists');return;}
+  const proj={id,name,owner:document.getElementById('f-owner').value.trim(),dept:document.getElementById('f-dept').value.trim(),status:document.getElementById('f-status').value,priority:document.getElementById('f-priority').value,rag:document.getElementById('f-rag').value,pct:parseInt(document.getElementById('f-pct').value)||0,start:document.getElementById('f-start').value,end:document.getElementById('f-end').value,budget:parseFloat(document.getElementById('f-budget').value)||0,spend:parseFloat(document.getElementById('f-spend').value)||0,milestone:document.getElementById('f-milestone').value.trim(),risk:document.getElementById('f-risk').value.trim(),notes:document.getElementById('f-notes').value.trim(),comments:editingId?(projects.find(p=>p.id===editingId)||{}).comments||[]:[]};
+  if(editingId){const i=projects.findIndex(p=>p.id===editingId);if(i>-1)projects[i]=proj;}
+  else projects.push(proj);
+  saveData();closeModal();render();showToast(editingId?'Project updated successfully':'Project added successfully');
+}
+
+function deleteProject(id){
+  if(!confirm('Delete this project permanently?'))return;
+  projects=projects.filter(p=>p.id!==id);
+  saveData();render();showToast('Project deleted');
+}
+
+function closeModal(){document.getElementById('projectModal').classList.remove('open');}
+
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='analytics')setTimeout(renderCharts,50);
+}
+
+function showToast(msg){document.getElementById('toastMsg').textContent=msg;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function exportCSV(){
+  const h=['ID','Name','Owner','Department','Status','Priority','RAG','Progress','Start','End','Budget','Spend','Milestone','Risk','Notes'];
+  const rows=projects.map(p=>[p.id,p.name,p.owner,p.dept,p.status,p.priority,p.rag,p.pct,p.start,p.end,p.budget,p.spend,p.milestone,p.risk,p.notes].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv=[h.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='pmo_portfolio.csv';a.click();
+}
+
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+document.getElementById('projectModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+loadData();
+</script>
